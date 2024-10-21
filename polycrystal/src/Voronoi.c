@@ -1,36 +1,65 @@
-double* Voronoi(int num_cells){
+Extract In_Array(double* array, uint64_t size)
+{
+	Extract extremes;
 	
-	int cell_centers[2 * num_cells];
+	extremes.min_value = array[0];
+	extremes.max_value = array[0];
+	extremes.min_index = 0;
+	extremes.max_index = 0;
+
+	for(i = 1; i < size; i++)
+	{
+		if(array[i] < extremes.min_value)
+		{
+			extremes.min_value = array[i];
+			extremes.min_index = i;
+		}
+		if(array[i] > extremes.max_value)
+		{
+			extremes.max_value = array[i];
+			extremes.max_index = i;
+		}
+	}
+	return extremes;
+}
+
+uint64_t* Voronoi(uint64_t num_cells)
+{
+	uint64_t cell_centers[2 * num_cells];
 	
 	srand(time(NULL));
 	
-	int elements = 0;
+	uint64_t elements = 0;
 	while(elements < num_cells){
 		
-		int rand_x = rand() % H + 1;
-		int rand_y = rand() % W + 1;
+		uint64_t rand_x = rand() % H;
+		uint64_t rand_y = rand() % W;
 		cell_centers[elements] = rand_x;
 		cell_centers[elements + num_cells] = rand_y;
 
 		elements++;
 	}
 	
-	double* tessellation = malloc(N*sizeof(double));
-	if(tessellation == NULL){ fprintf(stderr, "Memory allocation failed for Voronoi tessellation"); exit(EXIT_FAILURE); }
+	uint64_t* tessellation;
+	if((tessellation = (uint64_t *)malloc(N*sizeof(uint64_t))) == NULL)
+	{
+		printf("Tessellation could not be allocated!");
+	}
 	
-	for(int i = 0; i < N; i++){
-		int x = i/W;
-		int y = i%W;
+	Extract extremes;
+	
+	for(point = 0; point < N; point++)
+	{
+		double x = point/W;
+		double y = point%W;
 		double distances[num_cells];
-		for(int j = 0; j < num_cells;j++){ distances[j] = sqrt((x - cell_centers[j] ) * (x - cell_centers[j] ) + (y - cell_centers[num_cells+j] ) * (y - cell_centers[num_cells+j])); }
+		
+		for(grain = 0; grain < num_cells; grain++) 
+			distances[grain] = (x - cell_centers[grain] ) * (x - cell_centers[grain] ) + (y - cell_centers[num_cells + grain] ) * (y - cell_centers[num_cells + grain]);
 
-		MinResult result = minimumArray(distances, num_cells);
-		double min_value = result.value;
-		int min_index = result.index;
+		extremes = In_Array(distances, num_cells);
 
-		for(int k = 0; k < num_cells;k++){
-			if(k == min_index){tessellation[i] = k;}
-		}
+		tessellation[point] = extremes.min_index;
 	}
 	
 	return tessellation;

@@ -1,11 +1,12 @@
 //Lattice
-#define H 110
-#define W 110
+#define H 100
+#define W 100
 #define N (H*W)
 #define step 1.0
 #define tick 0.1
-#define save_after 100
-#define num_grains 15
+#define save_after 50
+#define num_grains 10
+#define diff_area 1.0/(step * step)
 
 //physical parameters
 #define interface_mobility 1.0
@@ -14,13 +15,30 @@
 
 #define K (1/sqrt(3.141592653589793238))
 
-typedef struct{
+typedef struct
+{
 	double eta[num_grains];
 	double boundary_reveal;
-}orientation;
+	double update_eta[num_grains];
+}
+Parameters;
 
-const char* save_location = "../images/polycrystal";
-const char* save_location2 = "../images/layerFIVE";
+typedef struct
+{
+	double laplacian[num_grains];
+}
+Functions;
 
-long i;
-int j;
+typedef struct
+{
+	uint64_t max_index;
+	uint64_t min_index;
+	double max_value;
+	double min_value;
+}
+Extract;
+
+Parameters* phase_field;
+Functions* function;
+
+uint64_t grain , point , i , j;

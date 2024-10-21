@@ -30,7 +30,7 @@ void TimeEvolution(void)
 	InitialCondition();
 	
 	uint64_t t = 0;
-	while(t < iterations)
+	while(t < iterations) //main time loop
 	{
 		
 		Laplacian_array();
@@ -71,7 +71,7 @@ void TimeEvolution(void)
 			else pf->boundary_reveal = 0;
 		}
 		
-		for(grain = 0; grain < num_grains; grain++)
+		for(grain = 0; grain < num_grains; grain++) //buffer layer update
 		{
 			for(i = 0; i < H; i++)
 			{
@@ -87,7 +87,7 @@ void TimeEvolution(void)
 		
 		t++;
 		uint64_t rem = t%save_after;
-		if(rem == 0)
+		if(rem == 0) // writing loop
 		{
 			FILE *imagefile;
 			char filename[256];

@@ -1,18 +1,29 @@
-void Laplacian(double* array, double* L_phi){
-    
-    double diff_area = 1/(step * step);
-    double up, down, left, right, center;
-
-    for (int i = 0; i < N; i++){
-        
-        up = array[(i >= H) ? (i - H) : (N - H + i)];
-        down = array[(i + H < N) ? (i + H) : (i + H - N)];
-
-        left = array[(i % W == 0) ? (i + W - 1) : (i - 1)];
-        right = array[((i + 1) % W == 0) ? (i + 1 - W) : (i + 1)];
-
-        center = array[i];
-
-        L_phi[i] = ((right + left - 2 * center) + (up + down - 2 * center)) * diff_area;
-    }
+void Laplacian(void)
+{
+	double up , down , left , right , center;
+	
+	for(i = 0; i < H; i++)
+	{
+		for(j = 0; j < W; j++)
+		{
+			for(grain = 0; grain < num_grains; grain++)
+			{
+				if(i == 0) up = phase_field[(H-1) * W + j].eta[grain];
+				else up = phase_field[(i-1) * W + j].eta[grain];
+				
+				if(i == H-1) down = phase_field[j].eta[grain];
+				else down = phase_field[(i+1) * W + j].eta[grain];
+				
+				if(j == 0) left = phase_field[i * W + (W-1)].eta[grain];
+				else left = phase_field[i * W + (j-1)].eta[grain];
+				
+				if(j == W-1) right = phase_field[i * W].eta[grain];
+				else right = phase_field[i * W + (j+1)].eta[grain];
+			
+				center = phase_field[i * W + j].eta[grain];
+				
+				function[i * W + j].laplacian[grain] = (up + down - 2.0 * center) + (left + right - 2.0 * center);
+			}			
+		}
+	}
 }
